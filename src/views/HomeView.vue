@@ -5,7 +5,6 @@ import Form from '@/components/Form/FormComponent.vue'
 <template>
   <main>
     <div class="container">
-      <h1>TO DO APP</h1>
       <Form />
     </div>
   </main>
