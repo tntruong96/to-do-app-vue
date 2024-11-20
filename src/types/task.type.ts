@@ -1,9 +1,11 @@
+import type { EStatusTask } from '@/enums/task.enum'
+
 interface IPropListTask {
   tasksData?: IItemTask[]
 }
 
 interface IPropsInput {
-  addMethod: () => void
+  addMethod: (task: IItemTask) => void
 }
 
 interface IPropsItemTask {
@@ -13,7 +15,7 @@ interface IPropsItemTask {
 interface IItemTask {
   id: number
   title: string
-  status: string
+  status: EStatusTask
 }
 
 export { type IPropListTask, type IItemTask, type IPropsInput, type IPropsItemTask }

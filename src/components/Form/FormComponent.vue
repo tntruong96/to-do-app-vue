@@ -9,19 +9,20 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { ref } from 'vue'
-import { IPropsInput, IItemTask } from '@/types/task.type.ts'
+import { type IPropsInput, type IItemTask } from '@/types/task.type.ts'
 import { EStatusTask } from '@/enums/task.enum.ts'
 
 const { addMethod } = defineProps<IPropsInput>()
 
-function handleEnter(e) {
+function handleEnter(e: Event) {
+  const target = e.target && (e.target as HTMLInputElement)
   const newTask: IItemTask = {
     id: Math.random(),
-    title: e.target.value,
+    title: target?.value ?? '',
     status: EStatusTask.INCOMPLETE,
   }
   addMethod(newTask)
-  e.target.value = ''
+  if (target) target.value = ''
 }
 </script>
 

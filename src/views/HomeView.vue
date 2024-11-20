@@ -1,18 +1,29 @@
 <script setup lang="ts">
 import FormComponent from '@/components/Form/FormComponent.vue'
 import ListTask from '@/components/ListTask/ListTask.vue'
-import { reactive } from 'vue'
-import { IItemTask } from '@/types/task.type.ts'
+import { reactive, ref } from 'vue'
+import { type IItemTask } from '@/types/task.type.ts'
 import ItemTask from '@/components/ItemTask/ItemTask.vue'
+import { EStatusTask } from '@/enums/task.enum'
 
-const tasksData = reactive([])
+const tasksData = ref<IItemTask[]>([])
 
 function handleInput(newTask: IItemTask) {
-  tasksData.push(newTask)
+  tasksData.value.push(newTask)
 }
 
-function handleCompleteTask(e) {
-  console.log(e)
+function handleCompleteTask(id: number) {
+  tasksData.value = tasksData.value.map((i) => {
+    if (id === i.id) {
+      return { ...i, status: EStatusTask.COMPLETED }
+    }
+    return i
+  })
+}
+
+function handleDelete(id: number) {
+  const deletedTaskList: IItemTask[] = tasksData.value.filter((i) => i.id !== id)
+  tasksData.value = deletedTaskList
 }
 </script>
 
@@ -27,6 +38,7 @@ function handleCompleteTask(e) {
           :taskData="task"
           :key="task.id"
           @onComplete="handleCompleteTask"
+          @onDelete="handleDelete"
         />
       </TransitionGroup>
     </div>
@@ -50,6 +62,7 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  transition: height 100ms ease-in;
   h1 {
     font-weight: 700;
   }
@@ -61,25 +74,26 @@ main {
   flex-direction: column;
   gap: 24px;
   padding: 24px 4px 0px;
+  position: relative;
 }
 
 /* 1. declare transition */
 .fade-move,
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+  transition: all 0.5s ease-in-out;
 }
 
 /* 2. declare enter from and leave to state */
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: scaleY(0.01) translate(30px, 0);
+  transform: scaleY(0.01) translate(20px, 0px);
 }
 
 /* 3. ensure leaving items are taken out of layout flow so that moving
       animations can be calculated correctly. */
-.fade-leave-active {
+/* .fade-leave-active {
   position: absolute;
-}
+} */
 </style>

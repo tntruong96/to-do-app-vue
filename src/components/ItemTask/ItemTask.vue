@@ -5,10 +5,11 @@
       @mouseenter="showPopup = true"
       @mouseout="showPopup = false"
       @click="$emit('onComplete', taskData.id)"
+      :class="taskData.status === EStatusTask.COMPLETED && 'completed'"
     >
       {{ taskData?.title }}
     </p>
-    <FontAwesomeIcon :icon="faX" size="xs" />
+    <FontAwesomeIcon @click="$emit('onDelete', taskData.id)" :icon="faX" size="xs" />
     <Transition name="">
       <span class="item-popup" v-if="showPopup">{{ taskData?.title }}</span>
     </Transition>
@@ -16,11 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import { IItemTask } from '@/types/task.type.'
-import { IPropsItemTask } from '@/types/task.type'
+import { type IItemTask, type IPropsItemTask } from '@/types/task.type.ts'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
 import { ref } from 'vue'
+import { EStatusTask } from '@/enums/task.enum'
 
 const { taskData } = defineProps<IPropsItemTask>()
 const emit = defineEmits(['onDelete', 'onComplete'])
@@ -30,20 +31,39 @@ const showPopup = ref<boolean>(false)
 
 <style lang="scss" scoped>
 .item-wrapper {
+  color: black;
   cursor: pointer;
   width: 100%;
+  height: 40px;
   display: flex;
   align-items: center;
+  box-sizing: border-box;
   gap: 12px;
   padding: 14px;
   position: relative;
   background-color: var(--secondary-c);
   border-radius: 8px;
+
   p {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
+    display: inline-block;
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      width: 0px;
+      height: 1px;
+      display: block;
+      background: black;
+      transition: all 500ms ease-in;
+    }
+    &.completed::after {
+      width: 100%;
+    }
   }
   .item-popup {
     position: absolute;
