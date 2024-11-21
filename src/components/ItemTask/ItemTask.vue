@@ -1,6 +1,12 @@
 <template>
   <li class="item-wrapper">
-    <input type="checkbox" />
+    <input
+      type="checkbox"
+      :id="taskData.id"
+      v-model="data"
+      :true-value="dynamicTrueValue"
+      :false-value="dynamicFalseValue"
+    />
     <p
       @mouseenter="showPopup = true"
       @mouseout="showPopup = false"
@@ -22,9 +28,12 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
 import { ref } from 'vue'
 import { EStatusTask } from '@/enums/task.enum'
-
 const { taskData } = defineProps<IPropsItemTask>()
-const emit = defineEmits(['onDelete', 'onComplete'])
+const data = ref(taskData.isSelected)
+const dynamicTrueValue = ref({ value: true, id: taskData.id })
+const dynamicFalseValue = ref({ value: false, id: taskData.id })
+
+const emit = defineEmits(['onDelete', 'onComplete', 'onSelect'])
 
 const showPopup = ref<boolean>(false)
 </script>
@@ -52,7 +61,7 @@ const showPopup = ref<boolean>(false)
     display: inline-block;
     position: relative;
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 14px;
       width: 0px;

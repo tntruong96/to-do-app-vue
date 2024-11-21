@@ -20,6 +20,7 @@ function handleEnter(e: Event) {
     id: Math.random(),
     title: target?.value ?? '',
     status: EStatusTask.INCOMPLETE,
+    isSelected: false,
   }
   addMethod(newTask)
   if (target) target.value = ''
