@@ -6,13 +6,14 @@
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { ref } from 'vue'
-import { type IPropsInput, type IItemTask } from '@/types/task.type.ts'
 import { EStatusTask } from '@/enums/task.enum.ts'
+import { useTaskStore } from '@/stores/task'
+import { type IItemTask, type IPropsInput } from '@/types/task.type.ts'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-const { addMethod } = defineProps<IPropsInput>()
+// const { addMethod } = defineProps<IPropsInput>()
+const store = useTaskStore()
 
 function handleEnter(e: Event) {
   const target = e.target && (e.target as HTMLInputElement)
@@ -20,10 +21,11 @@ function handleEnter(e: Event) {
     id: Math.random(),
     title: target?.value ?? '',
     status: EStatusTask.INCOMPLETE,
-    isSelected: false,
   }
-  addMethod(newTask)
-  if (target) target.value = ''
+  if (target?.value) {
+    store.handleAddTask(newTask)
+    target.value = ''
+  }
 }
 </script>
 

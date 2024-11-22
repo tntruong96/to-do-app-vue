@@ -1,56 +1,49 @@
 <script setup lang="ts">
 import FormComponent from '@/components/Form/FormComponent.vue'
-import ListTask from '@/components/ListTask/ListTask.vue'
-import { reactive, ref } from 'vue'
-import { type IItemTask } from '@/types/task.type.ts'
 import ItemTask from '@/components/ItemTask/ItemTask.vue'
-import { EStatusTask } from '@/enums/task.enum'
 import Button from '@/elements/Button.vue'
+import { useTaskStore } from '@/stores/task'
+import { type IItemTask } from '@/types/task.type.ts'
+import { ref } from 'vue'
 
-const tasksData = ref<IItemTask[]>([])
+// const tasksData = ref<IItemTask[]>([])
+const stores = useTaskStore()
 const selectedData = ref<{ id: number; value: boolean }[]>([])
 const reset = ref(false)
-
-function handleInput(newTask: IItemTask) {
-  tasksData.value.push(newTask)
-}
+const refChild = ref()
 
 function handleCompleteTask(id: number) {
-  tasksData.value = tasksData.value.map((i) => {
-    if (id === i.id) {
-      let taskStatus
-      if (i.status === EStatusTask.COMPLETED) {
-        taskStatus = EStatusTask.INCOMPLETE
-      } else if (i.status === EStatusTask.INCOMPLETE) {
-        taskStatus = EStatusTask.COMPLETED
-      }
-      return { ...i, status: taskStatus }
-    }
-    return i
-  })
-}
-
-function handleDelete(id: number) {
-  const deletedTaskList: IItemTask[] = tasksData.value.filter((i) => i.id !== id)
-  tasksData.value = deletedTaskList
+  // tasksData.value = tasksData.value.map((i) => {
+  //   if (id === i.id) {
+  //     let taskStatus
+  //     if (i.status === EStatusTask.COMPLETED) {
+  //       taskStatus = EStatusTask.INCOMPLETE
+  //     } else if (i.status === EStatusTask.INCOMPLETE) {
+  //       taskStatus = EStatusTask.COMPLETED
+  //     } else {
+  //       taskStatus = i.status
+  //     }
+  //     return { ...i, status: taskStatus }
+  //   }
+  //   return i
+  // })
 }
 
 function handleSelect(data: { id: number; value: boolean }) {
-  const filteredData = selectedData.value.filter((i) => i.id !== data.id)
-  selectedData.value = [...filteredData, data]
+  // const filteredData = selectedData.value.filter((i) => i.id !== data.id)
+  // selectedData.value = [...filteredData, data]
 }
 
 function deleteAllTask() {
-  tasksData.value = []
+  // tasksData.value = []
 }
 
 function deleteCompletedTasks() {
-  tasksData.value = tasksData.value.filter((i) => i.status === EStatusTask.INCOMPLETE)
+  // tasksData.value = tasksData.value.filter((i) => i.status === EStatusTask.INCOMPLETE)
 }
 
 function resetSelected() {
   selectedData.value = []
-  ref
 }
 
 function completeMultipleTask() {
@@ -63,39 +56,39 @@ function completeMultipleTask() {
   //   return i
   // })
   // tasksData.value = mappedData
-  console.log(tasksData)
 }
 </script>
 
 <template>
-  <main>
-    <div class="container">
-      <FormComponent :addMethod="handleInput" />
-      <!-- <ListTask :tasksData="tasksData" /> -->
-      <TransitionGroup tag="div" name="fade" class="list-wrapper">
-        <ItemTask
-          v-for="task in tasksData"
-          :taskData="task"
-          :key="task.id"
-          @onComplete="handleCompleteTask"
-          @onDelete="handleDelete"
-          @onSelect="handleSelect"
-          :shouldReset="reset"
-        />
-      </TransitionGroup>
-      <div class="group-button">
-        <Button @onClick="completeMultipleTask">Complete Multiple Task</Button>
-        <Button @onClick="deleteAllTask">Delete All Task</Button>
-        <Button @onClick="deleteCompletedTasks">Delete Completed Task</Button>
-      </div>
+  <!-- <main> -->
+  <div class="container">
+    <FormComponent />
+    <!-- <ListTask :tasksData="tasksData" /> -->
+    <TransitionGroup tag="div" name="fade" class="list-wrapper">
+      <ItemTask
+        v-for="task in stores.tasks"
+        :taskData="task"
+        :key="task.id"
+        @onComplete="handleCompleteTask"
+        @onSelect="handleSelect"
+        :shouldReset="reset"
+        ref="childRef"
+      />
+    </TransitionGroup>
+    <div class="group-button">
+      <Button @onClick="completeMultipleTask">Complete Multiple Task</Button>
+      <Button @onClick="deleteAllTask">Delete All Task</Button>
+      <Button @onClick="deleteCompletedTasks">Delete Completed Task</Button>
     </div>
-  </main>
+  </div>
+  <!-- </main> -->
 </template>
 
 <style lang="scss" scoped>
 main {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 .container {
   min-width: 400px;

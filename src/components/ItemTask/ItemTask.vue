@@ -2,7 +2,7 @@
   <li class="item-wrapper">
     <input
       type="checkbox"
-      :id="taskData.id"
+      :id="taskData.id.toString()"
       v-model="data"
       :true-value="dynamicTrueValue"
       :false-value="dynamicFalseValue"
@@ -10,12 +10,11 @@
     <p
       @mouseenter="showPopup = true"
       @mouseout="showPopup = false"
-      @click="$emit('onComplete', taskData.id)"
       :class="taskData.status === EStatusTask.COMPLETED && 'completed'"
     >
       {{ taskData?.title }}
     </p>
-    <FontAwesomeIcon @click="$emit('onDelete', taskData.id)" :icon="faX" size="xs" />
+    <FontAwesomeIcon @click="store.handleDelete(taskData.id)" :icon="faX" size="xs" />
     <Transition name="">
       <span class="item-popup" v-if="showPopup">{{ taskData?.title }}</span>
     </Transition>
@@ -28,10 +27,12 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
 import { ref } from 'vue'
 import { EStatusTask } from '@/enums/task.enum'
+import { useTaskStore } from '@/stores/task'
 const { taskData } = defineProps<IPropsItemTask>()
-const data = ref(taskData.isSelected)
+const data = ref()
 const dynamicTrueValue = ref({ value: true, id: taskData.id })
 const dynamicFalseValue = ref({ value: false, id: taskData.id })
+const store = useTaskStore()
 
 const emit = defineEmits(['onDelete', 'onComplete', 'onSelect'])
 
@@ -61,7 +62,7 @@ const showPopup = ref<boolean>(false)
     display: inline-block;
     position: relative;
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       top: 14px;
       width: 0px;

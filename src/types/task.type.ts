@@ -16,7 +16,7 @@ interface IItemTask {
   id: number
   title: string
   status: EStatusTask
-  isSelected: boolean
+  // isSelected: boolean
 }
 
 export { type IPropListTask, type IItemTask, type IPropsInput, type IPropsItemTask }

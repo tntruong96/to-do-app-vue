@@ -3,12 +3,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue'
 interface IButtonProps {
-  props: {};
+  props: {}
 }
-const { props } = ref<IButtonProps>();
-const emit = defineEmits(["onClick"]);
+const props = ref()
+const emit = defineEmits(['onClick'])
 </script>
 
 <style lang="scss" scoped>
@@ -17,7 +17,7 @@ const emit = defineEmits(["onClick"]);
   background-color: var(--quaternary-c);
   border-radius: 8px;
   padding: 12px;
-  font-weigh: 600;
+  font-weight: 600;
   width: fit-content;
   cursor: pointer;
 }
