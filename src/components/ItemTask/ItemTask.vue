@@ -6,11 +6,13 @@
       v-model="data"
       :true-value="dynamicTrueValue"
       :false-value="dynamicFalseValue"
+      @change="store.handleSelect(data)"
     />
     <p
       @mouseenter="showPopup = true"
       @mouseout="showPopup = false"
       :class="taskData.status === EStatusTask.COMPLETED && 'completed'"
+      @click="store.handleCompleteTask(taskData.id)"
     >
       {{ taskData?.title }}
     </p>
@@ -25,16 +27,21 @@
 import { type IItemTask, type IPropsItemTask } from '@/types/task.type.ts'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { EStatusTask } from '@/enums/task.enum'
 import { useTaskStore } from '@/stores/task'
 const { taskData } = defineProps<IPropsItemTask>()
-const data = ref()
 const dynamicTrueValue = ref({ value: true, id: taskData.id })
 const dynamicFalseValue = ref({ value: false, id: taskData.id })
+const data = ref(false)
 const store = useTaskStore()
 
-const emit = defineEmits(['onDelete', 'onComplete', 'onSelect'])
+watchEffect(() => {
+  const selectedStore = store.selectedTask.find((i) => i.id === taskData.id)
+  if (!selectedStore) {
+    data.value = false
+  }
+})
 
 const showPopup = ref<boolean>(false)
 </script>

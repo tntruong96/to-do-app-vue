@@ -10,78 +10,25 @@ import { ref } from 'vue'
 const stores = useTaskStore()
 const selectedData = ref<{ id: number; value: boolean }[]>([])
 const reset = ref(false)
-const refChild = ref()
-
-function handleCompleteTask(id: number) {
-  // tasksData.value = tasksData.value.map((i) => {
-  //   if (id === i.id) {
-  //     let taskStatus
-  //     if (i.status === EStatusTask.COMPLETED) {
-  //       taskStatus = EStatusTask.INCOMPLETE
-  //     } else if (i.status === EStatusTask.INCOMPLETE) {
-  //       taskStatus = EStatusTask.COMPLETED
-  //     } else {
-  //       taskStatus = i.status
-  //     }
-  //     return { ...i, status: taskStatus }
-  //   }
-  //   return i
-  // })
-}
-
-function handleSelect(data: { id: number; value: boolean }) {
-  // const filteredData = selectedData.value.filter((i) => i.id !== data.id)
-  // selectedData.value = [...filteredData, data]
-}
-
-function deleteAllTask() {
-  // tasksData.value = []
-}
-
-function deleteCompletedTasks() {
-  // tasksData.value = tasksData.value.filter((i) => i.status === EStatusTask.INCOMPLETE)
-}
-
-function resetSelected() {
-  selectedData.value = []
-}
-
-function completeMultipleTask() {
-  // tasksData.value = []
-  // const mappedData = tasksData.value.map((i) => {
-  //   const chosenData = selectedData.value.find((s) => s.id === i.id)
-  //   if (chosenData && chosenData.value === true) {
-  //     return { ...i, status: EStatusTask.COMPLETED }
-  //   }
-  //   return i
-  // })
-  // tasksData.value = mappedData
+function handleMultipleComplete() {
+  stores.completeMultipleTask()
+  stores.resetSelected()
 }
 </script>
 
 <template>
-  <!-- <main> -->
   <div class="container">
+    <h1>TO DO APP</h1>
     <FormComponent />
-    <!-- <ListTask :tasksData="tasksData" /> -->
     <TransitionGroup tag="div" name="fade" class="list-wrapper">
-      <ItemTask
-        v-for="task in stores.tasks"
-        :taskData="task"
-        :key="task.id"
-        @onComplete="handleCompleteTask"
-        @onSelect="handleSelect"
-        :shouldReset="reset"
-        ref="childRef"
-      />
+      <ItemTask v-for="task in stores.tasks" :taskData="task" :key="task.id" :shouldReset="reset" />
     </TransitionGroup>
     <div class="group-button">
-      <Button @onClick="completeMultipleTask">Complete Multiple Task</Button>
-      <Button @onClick="deleteAllTask">Delete All Task</Button>
-      <Button @onClick="deleteCompletedTasks">Delete Completed Task</Button>
+      <Button @onClick="handleMultipleComplete">Complete Multiple Task</Button>
+      <Button @onClick="stores.deleteAllTask">Delete All Task</Button>
+      <Button @onClick="stores.deleteCompletedTasks">Delete Completed Task</Button>
     </div>
   </div>
-  <!-- </main> -->
 </template>
 
 <style lang="scss" scoped>
