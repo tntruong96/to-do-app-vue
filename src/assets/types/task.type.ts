@@ -1,4 +1,4 @@
-import type { EStatusTask } from '@/enums/task.enum'
+import type { EStatusTask } from '@/assets/enums/task.enum'
 
 interface IPropListTask {
   tasksData?: IItemTask[]
@@ -13,7 +13,7 @@ interface IPropsItemTask {
 }
 
 interface IItemTask {
-  id: number
+  id: never
   title: string
   status: EStatusTask
   // isSelected: boolean

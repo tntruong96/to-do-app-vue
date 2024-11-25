@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { type IPropListTask } from '@/types/task.type.ts'
+import { type IPropListTask } from '@/assets/types/task.type'
 import ItemTask from '@/components/ItemTask/ItemTask.vue'
 
 const { tasksData } = defineProps<IPropListTask>()

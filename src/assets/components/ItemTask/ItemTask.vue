@@ -2,7 +2,7 @@
   <li class="item-wrapper">
     <input
       type="checkbox"
-      :id="taskData.id.toString()"
+      :id="taskData.id"
       v-model="data"
       :true-value="dynamicTrueValue"
       :false-value="dynamicFalseValue"
@@ -24,12 +24,12 @@
 </template>
 
 <script setup lang="ts">
-import { type IItemTask, type IPropsItemTask } from '@/types/task.type.ts'
+import { type IItemTask, type IPropsItemTask } from '@/assets/types/task.type'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
 import { ref, watchEffect } from 'vue'
-import { EStatusTask } from '@/enums/task.enum'
-import { useTaskStore } from '@/stores/task'
+import { EStatusTask } from '@/assets/enums/task.enum'
+import { useTaskStore } from '@/assets/stores/task'
 const { taskData } = defineProps<IPropsItemTask>()
 const dynamicTrueValue = ref({ value: true, id: taskData.id })
 const dynamicFalseValue = ref({ value: false, id: taskData.id })

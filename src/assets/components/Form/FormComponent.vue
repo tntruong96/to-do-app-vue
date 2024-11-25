@@ -6,9 +6,9 @@
 </template>
 
 <script setup lang="ts">
-import { EStatusTask } from '@/enums/task.enum.ts'
-import { useTaskStore } from '@/stores/task'
-import { type IItemTask, type IPropsInput } from '@/types/task.type.ts'
+import { EStatusTask } from '@/assets/enums/task.enum'
+import { useTaskStore } from '@/assets/stores/task'
+import { type IItemTask, type IPropsInput } from '@/assets/types/task.type'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 

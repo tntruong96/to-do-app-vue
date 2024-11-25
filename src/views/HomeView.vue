@@ -1,19 +1,29 @@
 <script setup lang="ts">
-import FormComponent from '@/components/Form/FormComponent.vue'
-import ItemTask from '@/components/ItemTask/ItemTask.vue'
-import Button from '@/elements/Button.vue'
-import { useTaskStore } from '@/stores/task'
-import { type IItemTask } from '@/types/task.type.ts'
-import { ref } from 'vue'
+import FormComponent from '@/assets/components/Form/FormComponent.vue'
+import ItemTask from '@/assets/components/ItemTask/ItemTask.vue'
+import Button from '@/assets/elements/Button.vue'
+import { useTaskStore } from '@/assets/stores/task'
+import { type IItemTask } from '@/assets/types/task.type'
+import { collection, getFirestore } from 'firebase/firestore'
+import { storeToRefs } from 'pinia'
+import { onMounted, ref } from 'vue'
+import { useCollection, useFirestore } from 'vuefire'
 
 // const tasksData = ref<IItemTask[]>([])
-const stores = useTaskStore()
-const selectedData = ref<{ id: number; value: boolean }[]>([])
-const reset = ref(false)
+const store = useTaskStore()
+const { tasks } = storeToRefs(store)
+const { fetchListTask } = useTaskStore()
+// const store = getFirestore()
+// const taskData = useCollection(collection(store, 'taskCollection'))
+// console.log(taskData)
 function handleMultipleComplete() {
-  stores.completeMultipleTask()
-  stores.resetSelected()
+  store.completeMultipleTask()
+  store.resetSelected()
 }
+
+onMounted(() => {
+  console.log(tasks.value)
+})
 </script>
 
 <template>
@@ -21,12 +31,12 @@ function handleMultipleComplete() {
     <h1>TO DO APP</h1>
     <FormComponent />
     <TransitionGroup tag="div" name="fade" class="list-wrapper">
-      <ItemTask v-for="task in stores.tasks" :taskData="task" :key="task.id" :shouldReset="reset" />
+      <ItemTask v-for="task in tasks" :taskData="task" :key="task.id" />
     </TransitionGroup>
     <div class="group-button">
       <Button @onClick="handleMultipleComplete">Complete Multiple Task</Button>
-      <Button @onClick="stores.deleteAllTask">Delete All Task</Button>
-      <Button @onClick="stores.deleteCompletedTasks">Delete Completed Task</Button>
+      <Button @onClick="store.deleteAllTask">Delete All Task</Button>
+      <Button @onClick="store.deleteCompletedTasks">Delete Completed Task</Button>
     </div>
   </div>
 </template>
