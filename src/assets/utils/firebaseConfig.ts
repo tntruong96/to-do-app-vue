@@ -2,7 +2,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getAnalytics } from 'firebase/analytics'
-import { collection, getFirestore } from 'firebase/firestore'
+import { collection, deleteDoc, doc, getDocs, getFirestore, writeBatch } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_VUE_APP_FIREBASE_API_KEY,
@@ -22,7 +22,24 @@ const firebaseApp = initializeApp(firebaseConfig)
 const db = getFirestore(firebaseApp)
 const auth = getAuth()
 const analytics = getAnalytics(firebaseApp)
+const batch = writeBatch(db)
 
-export { firebaseApp, auth }
+export { firebaseApp, auth, batch }
 
 export const taskRef = collection(db, 'task')
+
+export const clearCollection = async (name: string) => {
+  const collectionRef = collection(db, name)
+
+  try {
+    const querySnapshot = await getDocs(collectionRef)
+
+    const deletePromises = querySnapshot.docs.map((document) => {
+      return deleteDoc(doc(db, name, document.id))
+    })
+
+    await Promise.all(deletePromises)
+  } catch (error) {
+    console.error('Error clearing collection:', error)
+  }
+}

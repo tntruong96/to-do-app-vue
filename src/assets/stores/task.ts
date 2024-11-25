@@ -1,11 +1,11 @@
 import { EStatusTask } from '@/assets/enums/task.enum'
 import type { IItemTask } from '@/assets/types/task.type'
 import { useLocalStorage } from '@vueuse/core'
-import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore'
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 import { useCollection, useFirestore } from 'vuefire'
-import { taskRef } from '../utils/firebaseConfig'
+import { batch, clearCollection, taskRef } from '../utils/firebaseConfig'
 
 // const { value, promise } = useCollection(taskRef)
 export const useTaskStore = defineStore('task', {
@@ -36,19 +36,28 @@ export const useTaskStore = defineStore('task', {
         console.error('Error adding todo:', error)
       }
     },
-    handleCompleteTask(id: number) {
-      this.tasks = this.tasks.map((i) => {
-        if (id === i.id) {
-          let taskStatus
-          if (i.status === EStatusTask.COMPLETED) {
-            taskStatus = EStatusTask.INCOMPLETE
-          } else if (i.status === EStatusTask.INCOMPLETE) {
-            taskStatus = EStatusTask.COMPLETED
+    async handleCompleteTask(id: never) {
+      const updateData = this.tasks
+        .map((i) => {
+          if (id === i.id) {
+            let taskStatus
+            if (i.status === EStatusTask.COMPLETED) {
+              taskStatus = EStatusTask.INCOMPLETE
+            } else if (i.status === EStatusTask.INCOMPLETE) {
+              taskStatus = EStatusTask.COMPLETED
+            }
+            return taskStatus ? { ...i, status: taskStatus } : { ...i }
           }
-          return taskStatus ? { ...i, status: taskStatus } : { ...i }
-        }
-        return i
-      })
+          return i
+        })
+        .find((i) => i.id === id)
+      console.log(this.tasks)
+      try {
+        const docRef = doc(taskRef, id)
+        await updateDoc(docRef, updateData!)
+      } catch (error) {
+        console.error('Error adding todo:', error)
+      }
     },
     async deleteCompletedTasks() {
       this.tasks = this.tasks.filter((i) => i.status === EStatusTask.INCOMPLETE)
@@ -68,26 +77,34 @@ export const useTaskStore = defineStore('task', {
       this.selectedTask = [...filteredData, selectData]
     },
     deleteAllTask() {
-      this.tasks = []
+      clearCollection('task')
+      // this.tasks = []
     },
     resetSelected() {
       this.selectedTask = []
     },
-    completeMultipleTask() {
-      const mappedData = this.tasks.map((i) => {
-        const chosenData = this.selectedTask.find((s) => s.id === i.id)
-        if (chosenData && chosenData.value === true) {
-          let status
-          if (i.status === EStatusTask.INCOMPLETE) {
-            status = EStatusTask.COMPLETED
-          } else {
-            status = EStatusTask.INCOMPLETE
+    async completeMultipleTask() {
+      const updatedData = this.tasks
+        .map((i) => {
+          const chosenData = this.selectedTask.find((s) => s.id === i.id)
+          if (chosenData && chosenData.value === true) {
+            let status
+            if (i.status === EStatusTask.INCOMPLETE) {
+              status = EStatusTask.COMPLETED
+            } else {
+              status = EStatusTask.INCOMPLETE
+            }
+            return { ...i, status }
           }
-          return { ...i, status }
-        }
-        return i
+          return
+        })
+        .filter((i) => i !== undefined)
+      updatedData.forEach((i) => {
+        const docRef = doc(taskRef, i.id)
+        batch.update(docRef, i)
       })
-      this.tasks = mappedData
+
+      await batch.commit()
     },
   },
 })
